@@ -1,6 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
+const cors = require("cors"); // Import cors
 
 const authRoutes = require("./routes/authRoutes");
 const newsRoutes = require("./routes/newsRoutes");
@@ -10,6 +11,7 @@ connectDB();
 
 const app = express();
 app.use(express.json());
+app.use(cors()); // Enable CORS
 
 app.use("/api/auth", authRoutes);
 app.use("/api/news", newsRoutes);

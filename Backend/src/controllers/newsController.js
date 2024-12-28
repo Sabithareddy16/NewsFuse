@@ -8,7 +8,7 @@ exports.fetchNews = async (req, res) => {
             params: {
                 apiKey: process.env.NEWS_API_KEY,
                 // category,
-                q: "apple",
+                q: query,
             },
         });
 
