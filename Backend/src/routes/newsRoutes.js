@@ -1,4 +1,3 @@
-// filepath: /d:/Sabitha/NewsFuse/Backend/src/routes/newsRoutes.js
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
