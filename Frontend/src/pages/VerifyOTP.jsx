@@ -1,32 +1,29 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 
 const VerifyOTP = () => {
   const [otp, setOtp] = useState('');
   const [message, setMessage] = useState('');
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
   const email = new URLSearchParams(location.search).get('email');
 
   const handleVerifyOTP = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/verify-otp`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, otp }),
+      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/auth/verify-otp`, {
+        email,
+        otp,
       });
 
-      const result = await response.json();
-      if (response.ok) {
-        setMessage(result.msg);
+      if (response.data.success) {
+        setMessage(response.data.message);
         navigate('/login');
       } else {
-        setMessage(result.msg || 'OTP verification failed');
+        setMessage(response.data.message || 'OTP verification failed');
       }
     } catch (error) {
-      setMessage('An error occurred. Please try again.');
+      setMessage('');
     }
   };
 

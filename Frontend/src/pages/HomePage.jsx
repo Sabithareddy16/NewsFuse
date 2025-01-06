@@ -1,13 +1,50 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const HomePage = () => {
   const [query, setQuery] = useState('');
-  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [news, setNews] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    // Fetch user details if logged in
+    const loggedInUser = JSON.parse(localStorage.getItem('user'));
+    if (loggedInUser) {
+      setUser(loggedInUser);
+    }
+
+    // Fetch initial news
+    fetchNews('latest');
+  }, []);
+
+  const fetchNews = async (query) => {
+    setLoading(true);
+    setError('');
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/news`, {
+        params: { query },
+      });
+      setNews(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('', error);
+      setError('');
+      setLoading(false);
+    }
+  };
 
   const handleSearch = (e) => {
     e.preventDefault();
-    navigate(`/search?q=${query}`);
+    fetchNews(query);
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('user');
   };
 
   return (
@@ -15,8 +52,25 @@ const HomePage = () => {
       <header style={styles.header}>
         <h1 style={styles.logo}>NewsFuse</h1>
         <div style={styles.authLinks}>
-          <Link to="/login" style={styles.link}>Login</Link>
-          <Link to="/register" style={styles.link}>Register</Link>
+          {user ? (
+            <div style={styles.userMenu}>
+              <img src="/path/to/logo.png" alt="Profile Logo" style={styles.profileLogo} />
+              <span onClick={() => setDropdownOpen(!dropdownOpen)} style={styles.userName}>
+                {user.username}
+              </span>
+              {dropdownOpen && (
+                <div style={styles.dropdown}>
+                  <Link to="/bookmarks" style={styles.dropdownItem}>Bookmarks</Link>
+                  <span onClick={handleLogout} style={styles.dropdownItem}>Logout</span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <Link to="/login" style={styles.link}>Login</Link>
+              <Link to="/register" style={styles.link}>Register</Link>
+            </>
+          )}
         </div>
       </header>
       <nav style={styles.nav}>
@@ -42,6 +96,26 @@ const HomePage = () => {
           />
           <button type="submit" style={styles.searchButton}>Search</button>
         </form>
+        {loading && <p>Loading...</p>}
+        {error && <p>{error}</p>}
+        <div style={styles.newsContainer}>
+          {news.length > 0 ? (
+            news.map((article, index) => (
+              <div key={index} style={styles.card}>
+                {article.urlToImage && <img src={article.urlToImage} alt={article.title} style={styles.image} />}
+                <div style={styles.cardContent}>
+                  <h2>{article.title}</h2>
+                  <p>{article.description}</p>
+                  <p><strong>Published At:</strong> {new Date(article.publishedAt).toLocaleString()}</p>
+                  <p><strong>Source:</strong> {article.source.name}</p>
+                  <a href={article.url} target="_blank" rel="noopener noreferrer">Read more</a>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p></p>
+          )}
+        </div>
       </main>
     </div>
   );
@@ -78,6 +152,39 @@ const styles = {
     textDecoration: 'none',
     borderRadius: '5px',
   },
+  userMenu: {
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  profileLogo: {
+    width: '40px',
+    height: '40px',
+    borderRadius: '50%',
+    marginRight: '10px',
+  },
+  userName: {
+    cursor: 'pointer',
+    padding: '10px 20px',
+    backgroundColor: '#007bff',
+    color: '#fff',
+    borderRadius: '5px',
+  },
+  dropdown: {
+    position: 'absolute',
+    top: '100%',
+    right: 0,
+    backgroundColor: '#fff',
+    boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
+    zIndex: 1,
+  },
+  dropdownItem: {
+    padding: '10px 20px',
+    cursor: 'pointer',
+    display: 'block',
+    color: '#333',
+    textDecoration: 'none',
+  },
   nav: {
     backgroundColor: '#444',
     padding: '10px 20px',
@@ -88,7 +195,7 @@ const styles = {
     justifyContent: 'center',
     margin: 0,
     padding: 0,
-    fontSize: '20px', // Increased font size for categories
+    fontSize: '20px',
   },
   navItem: {
     margin: '0 10px',
@@ -123,6 +230,29 @@ const styles = {
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
+  },
+  newsContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    marginTop: '20px',
+  },
+  card: {
+    width: '300px',
+    margin: '20px',
+    padding: '15px',
+    border: '1px solid #ccc',
+    borderRadius: '8px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    backgroundColor: '#fff',
+  },
+  image: {
+    width: '100%',
+    height: 'auto',
+    borderRadius: '8px 8px 0 0',
+  },
+  cardContent: {
+    padding: '10px',
   },
 };
 

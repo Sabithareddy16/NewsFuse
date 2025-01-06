@@ -11,23 +11,22 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    console.log("Attempting login with", email, password);
+
     if (!email || !password) {
       setErrorMessage("Please enter both email and password.");
       return;
     }
 
-    setErrorMessage("");
-
     try {
-      // Make sure the URL here is correct, including the environment variable
       const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/auth/login`, { email, password });
+      console.log("Login successful:", response.data);
 
-      // Store the JWT token in localStorage for further authenticated requests
       localStorage.setItem("authToken", response.data.token);
-
       alert("Login successful! Welcome to NewsFuse.");
-      navigate("/home");
+      navigate("/");
     } catch (error) {
+      console.error("Login failed:", error);
       setErrorMessage(error.response?.data?.msg || "Invalid email or password. Please try again.");
     }
   };

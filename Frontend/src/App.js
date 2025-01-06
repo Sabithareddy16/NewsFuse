@@ -5,7 +5,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import HomePage from './pages/HomePage';
 import VerifyOTP from './pages/VerifyOTP';
-import NewsByCategory from './pages/NewsByCategory'; // Import NewsByCategory
+import NewsByCategory from './pages/NewsByCategory';
+// import SearchResults from './pages/SearchResults';
 
 function App() {
   return (
@@ -16,7 +17,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/verify-otp" element={<VerifyOTP />} />
-          <Route path="/news/:category" element={<NewsByCategory />} /> {/* Add NewsByCategory route */}
+          <Route path="/news/:category" element={<NewsByCategory />} />
+          {/* <Route path="/search" element={<SearchResults />} /> */}
         </Routes>
       </div>
     </Router>

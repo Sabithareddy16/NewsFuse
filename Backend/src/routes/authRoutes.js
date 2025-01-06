@@ -8,4 +8,7 @@ router.post('/register', authController.register);
 // Login Route
 router.post('/login', authController.login);
 
+// Verify OTP Route
+router.post('/verify-otp', authController.verifyOTP);
+
 module.exports = router;
