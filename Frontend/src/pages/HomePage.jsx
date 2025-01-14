@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const HomePage = () => {
   const [query, setQuery] = useState('');
   const [user, setUser] = useState(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch user details if logged in
-    const loggedInUser = JSON.parse(localStorage.getItem('user'));
-    if (loggedInUser) {
-      setUser(loggedInUser);
+    // Fetch user details from localStorage
+    const userString = localStorage.getItem('user');
+    if (userString) {
+      try {
+        const loggedInUser = JSON.parse(userString);
+        setUser(loggedInUser); // Set user state with the logged-in user's data
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+      }
     }
 
     // Fetch initial news
@@ -31,8 +36,8 @@ const HomePage = () => {
       setNews(response.data);
       setLoading(false);
     } catch (error) {
-      console.error('', error);
-      setError('');
+      console.error('Error fetching news:', error);
+      setError('Error fetching news');
       setLoading(false);
     }
   };
@@ -44,7 +49,8 @@ const HomePage = () => {
 
   const handleLogout = () => {
     setUser(null);
-    localStorage.removeItem('user');
+    localStorage.removeItem('user'); // Remove user from localStorage
+    navigate('/');
   };
 
   return (
@@ -54,16 +60,16 @@ const HomePage = () => {
         <div style={styles.authLinks}>
           {user ? (
             <div style={styles.userMenu}>
-              <img src="/path/to/logo.png" alt="Profile Logo" style={styles.profileLogo} />
-              <span onClick={() => setDropdownOpen(!dropdownOpen)} style={styles.userName}>
-                {user.username}
+              <img
+                src={user.profilePhoto || '/path/to/default-profile.png'}
+                alt="Profile"
+                style={styles.profileLogo}
+              />
+              {/* Display username dynamically */}
+              <span style={styles.userName}>{user.username}</span>
+              <span onClick={handleLogout} style={styles.logoutButton}>
+                Logout
               </span>
-              {dropdownOpen && (
-                <div style={styles.dropdown}>
-                  <Link to="/bookmarks" style={styles.dropdownItem}>Bookmarks</Link>
-                  <span onClick={handleLogout} style={styles.dropdownItem}>Logout</span>
-                </div>
-              )}
             </div>
           ) : (
             <>
@@ -113,7 +119,7 @@ const HomePage = () => {
               </div>
             ))
           ) : (
-            <p></p>
+            <p>No news found</p>
           )}
         </div>
       </main>
@@ -153,37 +159,24 @@ const styles = {
     borderRadius: '5px',
   },
   userMenu: {
-    position: 'relative',
     display: 'flex',
     alignItems: 'center',
+    gap: '10px',
   },
   profileLogo: {
     width: '40px',
     height: '40px',
     borderRadius: '50%',
-    marginRight: '10px',
   },
   userName: {
+    color: '#fff',
+  },
+  logoutButton: {
     cursor: 'pointer',
     padding: '10px 20px',
     backgroundColor: '#007bff',
     color: '#fff',
     borderRadius: '5px',
-  },
-  dropdown: {
-    position: 'absolute',
-    top: '100%',
-    right: 0,
-    backgroundColor: '#fff',
-    boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
-    zIndex: 1,
-  },
-  dropdownItem: {
-    padding: '10px 20px',
-    cursor: 'pointer',
-    display: 'block',
-    color: '#333',
-    textDecoration: 'none',
   },
   nav: {
     backgroundColor: '#444',

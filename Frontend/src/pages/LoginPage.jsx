@@ -11,8 +11,6 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    console.log("Attempting login with", email, password);
-
     if (!email || !password) {
       setErrorMessage("Please enter both email and password.");
       return;
@@ -20,9 +18,11 @@ const LoginPage = () => {
 
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/auth/login`, { email, password });
-      console.log("Login successful:", response.data);
 
+      // Store user data and authToken in localStorage
+      localStorage.setItem("user", JSON.stringify(response.data.user));
       localStorage.setItem("authToken", response.data.token);
+
       alert("Login successful! Welcome to NewsFuse.");
       navigate("/");
     } catch (error) {
