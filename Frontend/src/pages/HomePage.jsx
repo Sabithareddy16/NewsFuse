@@ -25,7 +25,7 @@ const HomePage = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/news`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/news/search`, {
         params: { query },
       });
       setNews(response.data);
