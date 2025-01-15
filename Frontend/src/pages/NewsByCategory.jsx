@@ -7,8 +7,19 @@ const NewsByCategory = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
+    const userString = localStorage.getItem('user');
+    if (userString) {
+      try {
+        const loggedInUser = JSON.parse(userString);
+        setUser(loggedInUser);
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+      }
+    }
+
     const fetchNews = async () => {
       try {
         console.log(`Fetching news for category: ${category}`);
@@ -43,6 +54,11 @@ const NewsByCategory = () => {
       <div style={styles.newsContainer}>
         {articles.map((article, index) => (
           <div key={index} style={styles.card}>
+            {user && (
+              <div style={styles.bookmarkIcon}>
+                <span>🔖</span> {/* Replace with your preferred icon */}
+              </div>
+            )}
             {article.urlToImage && <img src={article.urlToImage} alt={article.title} style={styles.image} />}
             <div style={styles.cardContent}>
               <h2>{article.title}</h2>
@@ -67,6 +83,7 @@ const styles = {
     justifyContent: 'space-around',
   },
   card: {
+    position: 'relative', // Ensure the bookmark icon stays positioned inside the card
     width: '300px',
     margin: '20px',
     padding: '15px',
@@ -74,6 +91,14 @@ const styles = {
     borderRadius: '8px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     backgroundColor: '#fff',
+  },
+  bookmarkIcon: {
+    position: 'absolute',
+    top: '10px',
+    right: '10px',
+    fontSize: '24px',
+    cursor: 'pointer',
+    color: '#007bff',
   },
   image: {
     width: '100%',

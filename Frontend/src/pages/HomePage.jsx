@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -11,18 +12,16 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch user details from localStorage
     const userString = localStorage.getItem('user');
     if (userString) {
       try {
         const loggedInUser = JSON.parse(userString);
-        setUser(loggedInUser); // Set user state with the logged-in user's data
+        setUser(loggedInUser);
       } catch (e) {
         console.error('Error parsing user data:', e);
       }
     }
 
-    // Fetch initial news
     fetchNews('latest');
   }, []);
 
@@ -49,7 +48,7 @@ const HomePage = () => {
 
   const handleLogout = () => {
     setUser(null);
-    localStorage.removeItem('user'); // Remove user from localStorage
+    localStorage.removeItem('user');
     navigate('/');
   };
 
@@ -65,7 +64,6 @@ const HomePage = () => {
                 alt="Profile"
                 style={styles.profileLogo}
               />
-              {/* Display username dynamically */}
               <span style={styles.userName}>{user.username}</span>
               <span onClick={handleLogout} style={styles.logoutButton}>
                 Logout
@@ -108,6 +106,11 @@ const HomePage = () => {
           {news.length > 0 ? (
             news.map((article, index) => (
               <div key={index} style={styles.card}>
+                {user && (
+                  <div style={styles.bookmarkIcon}>
+                    <span>🔖</span> {/* Replace with your preferred icon */}
+                  </div>
+                )}
                 {article.urlToImage && <img src={article.urlToImage} alt={article.title} style={styles.image} />}
                 <div style={styles.cardContent}>
                   <h2>{article.title}</h2>
@@ -128,109 +131,146 @@ const HomePage = () => {
 };
 
 const styles = {
-  page: {
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '100vh',
-    backgroundImage: "url('https://st.depositphotos.com/1000423/3108/i/450/depositphotos_31084019-stock-photo-media-technologies.jpg')",
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '10px 20px',
-    backgroundColor: '#333',
-    color: '#fff',
-  },
-  logo: {
-    margin: 0,
-  },
-  authLinks: {
-    display: 'flex',
-    gap: '10px',
-  },
-  link: {
-    padding: '10px 20px',
-    backgroundColor: '#007bff',
-    color: '#fff',
-    textDecoration: 'none',
-    borderRadius: '5px',
-  },
-  userMenu: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-  },
-  profileLogo: {
-    width: '40px',
-    height: '40px',
-    borderRadius: '50%',
-  },
-  userName: {
-    color: '#fff',
-  },
-  logoutButton: {
+      page: {
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        backgroundImage: "url('https://st.depositphotos.com/1000423/3108/i/450/depositphotos_31084019-stock-photo-media-technologies.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      },
+      header: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '10px 20px',
+        backgroundColor: '#333',
+        color: '#fff',
+      },
+      logo: {
+        margin: 0,
+      },
+      authLinks: {
+        display: 'flex',
+        gap: '10px',
+      },
+      link: {
+        padding: '10px 20px',
+        backgroundColor: '#007bff',
+        color: '#fff',
+        textDecoration: 'none',
+        borderRadius: '5px',
+      },
+      userMenu: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+      },
+      profileLogo: {
+        width: '40px',
+        height: '40px',
+        borderRadius: '50%',
+      },
+      userName: {
+        color: '#fff',
+      },
+      logoutButton: {
+        cursor: 'pointer',
+        padding: '10px 20px',
+        backgroundColor: '#007bff',
+        color: '#fff',
+        borderRadius: '5px',
+      },
+      nav: {
+        backgroundColor: '#444',
+        padding: '10px 20px',
+      },
+      navList: {
+        listStyleType: 'none',
+        display: 'flex',
+        justifyContent: 'center',
+        margin: 0,
+        padding: 0,
+        fontSize: '20px',
+      },
+      navItem: {
+        margin: '0 10px',
+      },
+      navLink: {
+        color: '#fff',
+        textDecoration: 'none',
+      },
+      container: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,
+        textAlign: 'center',
+        padding: '20px',
+      },
+      searchForm: {
+        marginTop: '20px',
+      },
+      searchInput: {
+        padding: '10px',
+        fontSize: '16px',
+        width: '300px',
+        marginRight: '10px',
+      },
+      searchButton: {
+        padding: '10px 20px',
+        fontSize: '16px',
+        backgroundColor: '#007bff',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+      },
+      newsContainer: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+        marginTop: '20px',
+      },
+      card: {
+        width: '300px',
+        margin: '20px',
+        padding: '15px',
+        border: '1px solid #ccc',
+        borderRadius: '8px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        backgroundColor: '#fff',
+      },
+      image: {
+        width: '100%',
+        height: 'auto',
+        borderRadius: '8px 8px 0 0',
+      },
+      cardContent: {
+        padding: '10px',
+      },
+    bookmarkButton: {
+      padding: '10px 20px',
+      marginTop: '10px',
+      backgroundColor: '#f0c14b',
+      border: '1px solid #a88734',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      fontWeight: 'bold',
+    },
+  
+
+  bookmarkIcon: {
+    position: 'absolute',
+    top: '10px',
+    right: '10px',
+    fontSize: '24px',
     cursor: 'pointer',
-    padding: '10px 20px',
-    backgroundColor: '#007bff',
-    color: '#fff',
-    borderRadius: '5px',
-  },
-  nav: {
-    backgroundColor: '#444',
-    padding: '10px 20px',
-  },
-  navList: {
-    listStyleType: 'none',
-    display: 'flex',
-    justifyContent: 'center',
-    margin: 0,
-    padding: 0,
-    fontSize: '20px',
-  },
-  navItem: {
-    margin: '0 10px',
-  },
-  navLink: {
-    color: '#fff',
-    textDecoration: 'none',
-  },
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    textAlign: 'center',
-    padding: '20px',
-  },
-  searchForm: {
-    marginTop: '20px',
-  },
-  searchInput: {
-    padding: '10px',
-    fontSize: '16px',
-    width: '300px',
-    marginRight: '10px',
-  },
-  searchButton: {
-    padding: '10px 20px',
-    fontSize: '16px',
-    backgroundColor: '#007bff',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  },
-  newsContainer: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    marginTop: '20px',
+    color: '#007bff',
   },
   card: {
+    position: 'relative', // Ensure the bookmark icon stays positioned inside the card
     width: '300px',
     margin: '20px',
     padding: '15px',
@@ -238,14 +278,6 @@ const styles = {
     borderRadius: '8px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     backgroundColor: '#fff',
-  },
-  image: {
-    width: '100%',
-    height: 'auto',
-    borderRadius: '8px 8px 0 0',
-  },
-  cardContent: {
-    padding: '10px',
   },
 };
 
